@@ -58,6 +58,7 @@ async function run() {
   try {
     await client.connect();
     const productCollection = client.db("CarPars").collection("Parts");
+    const orderCollection = client.db("CarPars").collection("CustomarOrders");
 
     //get all data
     app.get("/product", async (req, res) => {
@@ -65,6 +66,19 @@ async function run() {
       const cursor = productCollection.find(query);
       const products = await cursor.toArray();
       res.send(products);
+    });
+     // create a new data
+     app.post("/order", async (req, res) => {
+      const newOrder = req.body;
+      const result = await orderCollection.insertOne(newOrder);
+      res.send(result);
+    });
+    //   DELETE
+    app.delete("/order/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
+      res.send(result);
     });
     app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
